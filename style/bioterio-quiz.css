@@ -19,6 +19,7 @@
     max-width: 600px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 .close-btn-modal {
@@ -60,30 +61,6 @@
 .quiz-option .option-letter {
     font-size: 2rem;
 }
-
-/* .quiz-option .option-letter {
-    font-size: 2rem;
-    font-weight: bold;
-    background-color: #2a272a;
-    border: none;
-    color: #fff;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1 1 0;
-    padding: 5px;
-    max-width: 45px;
-}
-
-.quiz-option .option-answer{
-    flex: 1 1 0;
-    display: flex;
-    padding: 10px 0;
-    align-items: center;
-    margin-left: 10px;
-    font-size: 16px;
-} */
 
 .quiz-option:hover {
     background: #e0e0e0;
@@ -127,4 +104,27 @@
 
 .confirm-btn:hover {
     background: #444;
+}
+
+/* ❌ ✅ Estilização correta após reabrir o modal */
+.correct {
+    background-color: green !important;
+    color: white !important;
+    pointer-events: none !important;
+}
+
+.incorrect {
+    background-color: red !important;
+    color: white !important;
+    pointer-events: none !important;
+}
+
+.disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+}
+
+/* Remove hover para questões já respondidas */
+.disabled:hover {
+    background: inherit !important;
 }
