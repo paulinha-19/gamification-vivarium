@@ -6,25 +6,49 @@ const quizData = [
     mediaIndex: 1,
     type: "multiple-choice",
     question:
-      "Qual é a principal medida de segurança ao manusear resíduos perigosos?",
+      "Nesta plataforma, que dá acesso ao biotério,os agentes biológicos mantidos  representam qual tipo de risco para a saúde humana e para o ambiente?",
     options: [
-      { letter: "A", answer: "Usar luvas e máscara", correct: true },
-      { letter: "B", answer: "Manusear com as mãos limpas", correct: false },
-      { letter: "C", answer: "Armazenar sem etiqueta", correct: false },
-      { letter: "D", answer: "Descartar sem segregação", correct: false },
+      {
+        letter: "A",
+        answer: "Risco individual: moderado; Risco comunitário: baixo",
+        correct: false,
+      },
+      {
+        letter: "B",
+        answer: "Risco individual: alto; Risco comunitário: moderado",
+        correct: true,
+      },
+      {
+        letter: "C",
+        answer: "Risco individual: alto; Risco comunitário: alto",
+        correct: false,
+      },
     ],
   },
   {
     id: "question2",
     panoramaId: "img2",
     mediaIndex: 2,
-    type: "ordering",
-    question: "Organize os passos para descarte correto de resíduos químicos:",
+    type: "multiple-choice",
+    question:
+      "Você sabe que a entrada aqui é só para os VIPs, né? Nos ambientes de animais só entra quem tem autorização! Isso significa que apenas pessoas treinadas e com permissão especial podem circular por lá. Nenhum usuário externo  pode circular desacompanhado aqui. Por isso, o responsável pelo biotério entra junto com o usuário. Se você já tem a autorização, pode entrar. Mas antes me responde uma pergunta: Como você está se sentindo hoje?",
     options: [
-      { letter: "A", answer: "Etiquetar corretamente", order: 1 },
-      { letter: "B", answer: "Armazenar em local apropriado", order: 2 },
-      { letter: "C", answer: "Separar os tipos de resíduos", order: 3 },
-      { letter: "D", answer: "Descartar conforme regulamentação", order: 4 },
+      {
+        letter: "A",
+        answer: "Tô com a garganta inflamada e tossindo de vez em quando.",
+        correct: false,
+      },
+      {
+        letter: "B",
+        answer: "Tô me sentindo febril e com dores no corpo",
+        correct: false,
+      },
+      {
+        letter: "C",
+        answer: "Tô com uma dor de cabeça que vou te contar...",
+        correct: false,
+      },
+      { letter: "D", answer: "Tô bem e com disposição. ", correct: true },
     ],
   },
   {
@@ -33,7 +57,7 @@ const quizData = [
     mediaIndex: 3,
     type: "image-selection",
     question:
-      "Selecione os itens corretos de EPI para manuseio de materiais biológicos:",
+      "Opa! Opa! Antes de se paramentar precisamos saber se você sabe o que vai ter que retirar e guardar aqui nas gavetas. Já que você entrou antes em um NBA2,  já conhece a Norma Regulamentadora 32. Então nada de usar adereços enquanto estiver trabalhando em um ambiente de risco biológico! Isso vale para TODO MUNDO, independente do que você faz. Agora toque nos itens que você precisa retirar, antes de se paramentar:",
     options: [
       { letter: "A", answer: "Óculos de proteção", correct: true },
       { letter: "B", answer: "Avental descartável", correct: true },
@@ -43,6 +67,19 @@ const quizData = [
       { letter: "F", answer: "Boné", correct: false },
     ],
   },
+  {
+    id: "question4",
+    panoramaId: "img4",
+    mediaIndex: 4,
+    type: "ordering",
+    question: "Organize os passos para descarte correto de resíduos químicos:",
+    options: [
+      { letter: "A", answer: "Etiquetar corretamente", order: 1 },
+      { letter: "B", answer: "Armazenar em local apropriado", order: 2 },
+      { letter: "C", answer: "Separar os tipos de resíduos", order: 3 },
+      { letter: "D", answer: "Descartar conforme regulamentação", order: 4 },
+    ],
+  },
 ];
 
 // Função para renderizar a pergunta dentro do modal
@@ -50,63 +87,93 @@ function renderQuestion(panoramaId) {
   const modalContent = document.getElementById("quizModalContent");
   modalContent.innerHTML = ""; // Limpa conteúdo anterior
 
-  // Filtra a pergunta pelo panorama atual
   const question = quizData.find((q) => q.panoramaId === panoramaId);
-
   if (!question) {
     modalContent.innerHTML =
       "<p>Nenhuma pergunta disponível para este panorama.</p>";
     return;
   }
 
-  // Cria o HTML da pergunta e alternativas
+  const progress = getProgress();
+  const alreadyAnswered = progress.answeredQuestions.includes(question.id);
+
   let questionHTML = `
-    <h2 class="quiz-title">${question.id} — ${question.question}</h2>
+    <span class="close-btn-modal" onclick="closeQuizModal()">&times;</span>
+    <h2 class="quiz-title">${question.question}</h2>
     <div class="quiz-options">
   `;
 
   question.options.forEach((option) => {
+    let extraClass = alreadyAnswered ? "disabled" : "";
+    let icon = option.letter;
+
+    if (alreadyAnswered) {
+      if (option.correct) {
+        extraClass += " correct";
+        icon = "✅";
+      } else {
+        extraClass += " incorrect";
+        icon = "❌";
+      }
+    }
+
     questionHTML += `
-      <button class="quiz-option" data-question-id="${question.id}" data-answer="${option.letter}">
-     <span class="option-letter">${option.letter}</span>
+      <button class="quiz-option ${extraClass}" 
+              data-question-id="${question.id}" 
+              data-answer="${option.letter}" 
+              ${alreadyAnswered ? "disabled" : ""}>
+        <span class="option-letter">${icon}</span>
         <span class="option-text">${option.answer}</span>
       </button>
     `;
   });
 
-  questionHTML += "</div><button id='confirmAnswer' class='confirm-btn'>OK</button>";
-
+  questionHTML += `<button id="confirmAnswer" class="confirm-btn" ${
+    alreadyAnswered ? "disabled" : ""
+  }>OK</button>`;
   modalContent.innerHTML = questionHTML;
 
-  // Adiciona evento de clique para capturar resposta
-  document.querySelectorAll(".quiz-option").forEach((button) => {
-    button.addEventListener("click", function () {
-      document
-        .querySelectorAll(".quiz-option")
-        .forEach((btn) => btn.classList.remove("selected"));
-      this.classList.add("selected");
+  if (!alreadyAnswered) {
+    document.querySelectorAll(".quiz-option").forEach((button) => {
+      button.addEventListener("click", function () {
+        document
+          .querySelectorAll(".quiz-option")
+          .forEach((btn) => btn.classList.remove("selected"));
+        this.classList.add("selected");
+      });
     });
-  });
 
-  document
-    .getElementById("confirmAnswer")
-    .addEventListener("click", function () {
-      const selected = document.querySelector(".quiz-option.selected");
-      if (selected) {
-        const questionId = selected.getAttribute("data-question-id");
+    document
+      .getElementById("confirmAnswer")
+      .addEventListener("click", function () {
+        const selected = document.querySelector(".quiz-option.selected");
+        if (selected) {
+          const questionId = selected.getAttribute("data-question-id");
 
-        // Salvar progresso no cookie e na variável local
-        saveProgress(questionId);
+          document.querySelectorAll(".quiz-option").forEach((btn) => {
+            const answerLetter = btn.getAttribute("data-answer");
+            const isCorrect = question.options.find(
+              (opt) => opt.letter === answerLetter
+            ).correct;
 
-        // Atualiza a memória local para garantir que a mudança seja refletida imediatamente
-        const progress = getProgress();
-        console.log("Progresso atualizado em tempo real:", progress);
+            if (isCorrect) {
+              btn.classList.add("correct");
+              btn.innerHTML = `<span class="option-letter">✅</span> <span class="option-text">${btn.innerText}</span>`;
+            } else {
+              btn.classList.add("incorrect");
+              btn.innerHTML = `<span class="option-letter">❌</span> <span class="option-text">${btn.innerText}</span>`;
+            }
+            btn.classList.add("disabled");
+            btn.disabled = true;
+          });
 
-        closeQuizModal();
-      } else {
-        alert("Selecione uma resposta antes de confirmar.");
-      }
-    });
+          saveProgress(questionId);
+          document.getElementById("confirmAnswer").disabled = true;
+        } else {
+          alert("Selecione uma resposta antes de confirmar.");
+        }
+      });
+  }
 }
 
 // Função para abrir o modal do quiz e carregar a pergunta correta
@@ -116,26 +183,27 @@ function openQuizModal(panoramaId) {
   renderQuestion(panoramaId);
 }
 
-// Função para fechar o modal
+// Função para fechar o modal ao clicar no botão (X) ou fora do modal
 function closeQuizModal() {
   document.getElementById("quizModalContainer").style.display = "none";
 }
 
-// Função para salvar progresso nos cookies (última questão respondida e panorama associado)
+// Função para salvar progresso nos cookies
 function saveProgress(questionId) {
   let questionData = quizData.find((q) => q.id === questionId);
-
   if (!questionData) return;
 
-  let progress = {
-    lastQuestion: questionId,
-    lastPanorama: questionData.panoramaId,
-  };
+  let progress = getProgress();
+  if (!progress.answeredQuestions.includes(questionId)) {
+    progress.answeredQuestions.push(questionId);
+  }
+
+  progress.lastQuestion = questionId;
+  progress.lastPanorama = questionData.panoramaId;
 
   document.cookie = `quizProgress=${JSON.stringify(
     progress
   )};path=/;expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-  console.log("Progresso salvo:", progress);
 }
 
 // Função para recuperar progresso salvo
@@ -147,9 +215,8 @@ function getProgress() {
       return JSON.parse(decodeURIComponent(value));
     }
   }
-  return null; // Retorna null se não houver progresso salvo
+  return { answeredQuestions: [], lastQuestion: null, lastPanorama: null };
 }
-
 // Função para recuperar parâmetros da URL
 function getURLParameter(name) {
   const urlParams = new URLSearchParams(window.location.search);
