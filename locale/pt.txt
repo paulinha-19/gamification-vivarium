@@ -1,0 +1,17 @@
+#: locale=pt
+
+## Media
+
+### Title
+panorama_11755EA8_1C4E_530A_41BB_E44F4BA3FFA0.label = img1
+panorama_10865B42_1C4E_717F_41B5_1FA8C52FF677.label = img2
+panorama_10876F87_1C4E_7105_41A0_8A35B16FA713.label = img3
+panorama_1086F44F_1C4E_5705_419C_DC4B1003F0E6.label = img4
+panorama_1087398D_1C4E_510A_41B8_4853BFD5197B.label = img5
+
+## Tour
+
+### Description
+
+### Title
+tour.name = bioterio
