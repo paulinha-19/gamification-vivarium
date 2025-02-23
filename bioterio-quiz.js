@@ -129,24 +129,47 @@ function renderQuestion(panoramaId) {
 
   const progress = getProgress();
   const alreadyAnswered = progress.answeredQuestions.includes(question.id);
+  const selectedAnswer = getSelectedAnswer(question.id); // Pega a resposta salva
 
   let questionHTML = `
-    <span class="close-btn-modal" onclick="closeQuizModal()">&times;</span>
+   <div class="quiz-modal-content-top">
+      <div class="close-btn-modal-container">
+        <button class="button-none">
+          <i class="close-btn-modal" onclick="closeQuizModal()">&times;</i>
+        </button> 
+      </div>
     <h2 class="quiz-title">${question.question}</h2>
+    </div>
     <div class="quiz-options">
   `;
 
   question.options.forEach((option) => {
     let extraClass = alreadyAnswered ? "disabled" : "";
-    let icon = option.letter;
+    let iconContent = option.letter;
+    let iconColor = "";
+    let backgroundColor = "";
+
+    // Antes do fechamento do modal (apenas cor de fundo)
+    if (!alreadyAnswered && selectedAnswer === option.letter) {
+      extraClass += " selected"; // Apenas a cor de fundo
+    }
+
+    // Após reabrir o modal (aplica a estilização completa)
+    if (alreadyAnswered && selectedAnswer === option.letter) {
+      extraClass += " selected-option";
+    }
 
     if (alreadyAnswered) {
       if (option.correct) {
         extraClass += " correct";
-        icon = "✅";
+        iconContent = "✔"; // ✔
+        iconColor = "correct-icon";
+        backgroundColor = "option-already-answered";
       } else {
         extraClass += " incorrect";
-        icon = "❌";
+        iconContent = "✖"; // ✖
+        iconColor = "incorrect-icon";
+        backgroundColor = "option-already-answered";
       }
     }
 
@@ -155,24 +178,31 @@ function renderQuestion(panoramaId) {
               data-question-id="${question.id}" 
               data-answer="${option.letter}" 
               ${alreadyAnswered ? "disabled" : ""}>
-        <span class="option-letter">${icon}</span>
+        <span class="option-letter ${iconColor} ${backgroundColor}">${iconContent}</span>
         <span class="option-text">${option.answer}</span>
       </button>
     `;
   });
 
-  questionHTML += `<button id="confirmAnswer" class="confirm-btn" ${
-    alreadyAnswered ? "disabled" : ""
-  }>OK</button>`;
+  // Adiciona o botão "OK" apenas se alreadyAnswered for falso
+  if (!alreadyAnswered) {
+    questionHTML += `<button id="confirmAnswer" class="confirm-btn" ${
+      alreadyAnswered ? "disabled" : ""
+    }>OK</button>`;
+  }
+
   modalContent.innerHTML = questionHTML;
 
+  // Evento para destacar a opção selecionada antes da confirmação
   if (!alreadyAnswered) {
     document.querySelectorAll(".quiz-option").forEach((button) => {
       button.addEventListener("click", function () {
         document
           .querySelectorAll(".quiz-option")
-          .forEach((btn) => btn.classList.remove("selected"));
-        this.classList.add("selected");
+          .forEach((btn) =>
+            btn.classList.remove("selected", "selected-option")
+          );
+        this.classList.add("selected"); // Apenas fundo cinza antes do fechamento
       });
     });
 
@@ -182,6 +212,7 @@ function renderQuestion(panoramaId) {
         const selected = document.querySelector(".quiz-option.selected");
         if (selected) {
           const questionId = selected.getAttribute("data-question-id");
+          const selectedAnswer = selected.getAttribute("data-answer");
 
           document.querySelectorAll(".quiz-option").forEach((btn) => {
             const answerLetter = btn.getAttribute("data-answer");
@@ -189,19 +220,38 @@ function renderQuestion(panoramaId) {
               (opt) => opt.letter === answerLetter
             ).correct;
 
+            let iconSpan = btn.querySelector(".option-letter");
+            let textSpan = btn.querySelector(".option-text");
+
+            // Se for a opção selecionada, destaca a opção selecionada
+            if (btn.classList.contains("selected")) {
+              btn.classList.add("selected-option");
+            }
+
             if (isCorrect) {
               btn.classList.add("correct");
-              btn.innerHTML = `<span class="option-letter">✅</span> <span class="option-text">${btn.innerText}</span>`;
+              iconSpan.textContent = "✔"; // ✅
+              iconSpan.classList.add("correct-icon");
+              iconSpan.classList.add("correct-background");
             } else {
               btn.classList.add("incorrect");
-              btn.innerHTML = `<span class="option-letter">❌</span> <span class="option-text">${btn.innerText}</span>`;
+              iconSpan.textContent = "✖"; // ❌
+              iconSpan.classList.add("incorrect-icon");
+              iconSpan.classList.add("incorrect-background");
             }
             btn.classList.add("disabled");
             btn.disabled = true;
+
+            // Remove a letra original para evitar duplicação
+            textSpan.textContent = question.options.find(
+              (opt) => opt.letter === answerLetter
+            ).answer;
           });
 
-          saveProgress(questionId);
-          document.getElementById("confirmAnswer").disabled = true;
+          saveProgress(questionId, selectedAnswer);
+          const confirmAnswer = document.getElementById("confirmAnswer");
+          confirmAnswer.disabled = true;
+          confirmAnswer.style.display = "none";
         } else {
           alert("Selecione uma resposta antes de confirmar.");
         }
