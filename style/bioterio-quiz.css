@@ -19,20 +19,29 @@
     max-width: 600px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.quiz-modal-content-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.close-btn-modal-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
 }
 
 .close-btn-modal {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
+    font-size: 2rem;
 }
 
 .quiz-title {
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-top: 1rem;
+    text-align: justify;
 }
 
 .quiz-options {
@@ -45,53 +54,28 @@
     display: flex;
     align-items: center;
     width: 100%;
-    background: #f6f6f6;
+    /* background: #f6f6f6; */
     border: none;
     padding: 15px;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     text-align: left;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     transition: 0.3s ease-in-out;
     outline: none;
-    border: 2px solid transparent;
+    /* border: 2px solid transparent; */
 }
 
 .quiz-option .option-letter {
     font-size: 2rem;
 }
 
-/* .quiz-option .option-letter {
-    font-size: 2rem;
-    font-weight: bold;
-    background-color: #2a272a;
-    border: none;
-    color: #fff;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1 1 0;
-    padding: 5px;
-    max-width: 45px;
-}
-
-.quiz-option .option-answer{
-    flex: 1 1 0;
-    display: flex;
-    padding: 10px 0;
-    align-items: center;
-    margin-left: 10px;
-    font-size: 16px;
-} */
-
 .quiz-option:hover {
     background: #e0e0e0;
 }
 
 .quiz-option.selected {
-    border: 2px solid #000;
-    background: #dcdcdc;
+    background: #d5d4d4;
 }
 
 .option-letter {
@@ -99,18 +83,22 @@
     font-weight: bold;
     background: #333;
     color: white;
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
     margin-right: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 35px;
+    min-height: 35px;
 }
 
 .option-text {
     flex-grow: 1;
+}
+
+.option-already-answered {
+    background: #fff
 }
 
 .confirm-btn {
@@ -123,8 +111,86 @@
     margin-top: 10px;
     cursor: pointer;
     border-radius: 5px;
+    display: block;
 }
 
 .confirm-btn:hover {
     background: #444;
+}
+
+.confirm-btn-none {
+    display: none;
+}
+
+/* ❌ ✅ Estilização correta após reabrir o modal */
+
+.correct,
+.incorrect {
+    color: white !important;
+    pointer-events: none !important;
+}
+
+.correct {
+    background-color: green !important;
+}
+
+.incorrect {
+    background-color: red !important;
+}
+
+.correct-icon {
+    color: green !important;
+}
+
+.incorrect-icon {
+    color: red !important;
+}
+
+.correct-background,
+.incorrect-background {
+    background-color: white !important;
+}
+
+.disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+}
+
+/* Remove hover para questões já respondidas */
+.disabled:hover {
+    background: inherit !important;
+}
+
+.button-none {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    outline: inherit;
+    cursor: pointer;
+}
+
+.selected-option {
+    border: 2px solid #aaa;
+    animation: pulseEffect 1.5s infinite;
+}
+
+
+/* Definição da animação pulse */
+@keyframes pulseEffect {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    50% {
+        transform: scale(1.01);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
 }
