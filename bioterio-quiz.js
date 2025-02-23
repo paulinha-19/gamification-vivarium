@@ -271,24 +271,6 @@ function closeQuizModal() {
   document.getElementById("quizModalContainer").style.display = "none";
 }
 
-// Função para salvar progresso nos cookies
-function saveProgress(questionId) {
-  let questionData = quizData.find((q) => q.id === questionId);
-  if (!questionData) return;
-
-  let progress = getProgress();
-  if (!progress.answeredQuestions.includes(questionId)) {
-    progress.answeredQuestions.push(questionId);
-  }
-
-  progress.lastQuestion = questionId;
-  progress.lastPanorama = questionData.panoramaId;
-
-  document.cookie = `quizProgress=${JSON.stringify(
-    progress
-  )};path=/;expires=Fri, 31 Dec 9999 23:59:59 GMT`;
-}
-
 // Função para recuperar progresso salvo
 function getProgress() {
   const cookies = document.cookie.split("; ");
