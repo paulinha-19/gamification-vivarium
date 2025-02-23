@@ -90,6 +90,30 @@ function getSelectedAnswer(questionId) {
     : null;
 }
 
+// Função para salvar progresso nos cookies
+function saveProgress(questionId, selectedAnswer) {
+  let questionData = quizData.find((q) => q.id === questionId);
+  if (!questionData) return;
+
+  let progress = getProgress();
+
+  // Inicializa selectedAnswers se não existir
+  if (!progress.selectedAnswers) {
+    progress.selectedAnswers = {};
+  }
+
+  if (!progress.answeredQuestions.includes(questionId)) {
+    progress.answeredQuestions.push(questionId);
+  }
+
+  progress.selectedAnswers[questionId] = selectedAnswer;
+  progress.lastQuestion = questionId;
+  progress.lastPanorama = questionData.panoramaId;
+
+  document.cookie = `quizProgress=${JSON.stringify(
+    progress
+  )};path=/;expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+}
 
 // Função para renderizar a pergunta dentro do modal
 function renderQuestion(panoramaId) {
