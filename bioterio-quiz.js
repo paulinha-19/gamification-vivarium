@@ -82,6 +82,15 @@ const quizData = [
   },
 ];
 
+// Função para obter a resposta salva do usuário para uma questão específica
+function getSelectedAnswer(questionId) {
+  const progress = getProgress();
+  return progress.selectedAnswers && progress.selectedAnswers[questionId]
+    ? progress.selectedAnswers[questionId]
+    : null;
+}
+
+
 // Função para renderizar a pergunta dentro do modal
 function renderQuestion(panoramaId) {
   const modalContent = document.getElementById("quizModalContent");
