@@ -295,10 +295,19 @@ function getProgress() {
   for (let cookie of cookies) {
     let [name, value] = cookie.split("=");
     if (name === "quizProgress") {
-      return JSON.parse(decodeURIComponent(value));
+      let parsed = JSON.parse(decodeURIComponent(value));
+      if (!parsed.selectedAnswers) {
+        parsed.selectedAnswers = {}; // Garante que sempre tenha um objeto vazio
+      }
+      return parsed;
     }
   }
-  return { answeredQuestions: [], lastQuestion: null, lastPanorama: null };
+  return {
+    answeredQuestions: [],
+    lastQuestion: null,
+    lastPanorama: null,
+    selectedAnswers: {},
+  };
 }
 // Função para recuperar parâmetros da URL
 function getURLParameter(name) {
