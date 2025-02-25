@@ -291,6 +291,8 @@ function renderQuestion(panoramaId) {
       : "quiz-options-gap";
 
   let questionHTML = ``;
+
+  questionHTML = `
    <div class="quiz-modal-content-top">
       <div class="close-btn-modal-container">
         <button class="button-none">
@@ -299,7 +301,12 @@ function renderQuestion(panoramaId) {
       </div>
     <h2 class="quiz-title">${question.question}</h2>
     </div>
-    <div class="quiz-options">
+                ${
+      question.type === "image-selection"
+        ? `<div class="quiz-progress"> <p id="progress-counter">Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}</p></div>`
+        : ""
+    }
+    <div class="quiz-options ${gapValue}">
   `;
 
   question.options.forEach((option) => {
