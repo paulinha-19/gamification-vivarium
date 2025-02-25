@@ -262,6 +262,10 @@ function renderQuestion(panoramaId) {
     return;
   }
 
+  let isFullyCorrect = false; // Declarado antes para ser usado no escopo global da função
+  let correctSelectionsCount = 0; // Declarado antes para ser usado no escopo global da função
+  let allCorrectAnswers = []; 
+
   const progress = getProgress();
   const alreadyAnswered = progress.answeredQuestions.includes(question.id);
   const selectedAnswer = getSelectedAnswer(question.id); // Pega a resposta salva
