@@ -59,12 +59,102 @@ const quizData = [
     question:
       "Opa! Opa! Antes de se paramentar precisamos saber se você sabe o que vai ter que retirar e guardar aqui nas gavetas. Já que você entrou antes em um NBA2,  já conhece a Norma Regulamentadora 32. Então nada de usar adereços enquanto estiver trabalhando em um ambiente de risco biológico! Isso vale para TODO MUNDO, independente do que você faz. Agora toque nos itens que você precisa retirar, antes de se paramentar:",
     options: [
-      { letter: "A", answer: "Óculos de proteção", correct: true },
-      { letter: "B", answer: "Avental descartável", correct: true },
-      { letter: "C", answer: "Chinelo", correct: false },
-      { letter: "D", answer: "Luvas de látex", correct: true },
-      { letter: "E", answer: "Máscara", correct: true },
-      { letter: "F", answer: "Boné", correct: false },
+      {
+        id: "badge",
+        answer: "Crachá",
+        correct: false,
+        image: "./media//quiz/badge.png",
+      },
+      {
+        id: "black-jacket",
+        answer: "Jaqueta preta",
+        correct: false,
+        image: "./media//quiz/black-jacket.png",
+      },
+      {
+        id: "bracelet",
+        answer: "Pulseira",
+        correct: false,
+        image: "./media//quiz/bracelet.png",
+      },
+      {
+        id: "buttons",
+        answer: "Botons",
+        correct: false,
+        image: "./media//quiz/buttons.png",
+      },
+      {
+        id: "cap",
+        answer: "Boné",
+        correct: false,
+        image: "./media//quiz/cap.png",
+      },
+      {
+        id: "clock",
+        answer: "Relógio",
+        correct: false,
+        image: "./media//quiz/clock.png",
+      },
+      {
+        id: "cord",
+        answer: "Cordão",
+        correct: true,
+        image: "./media//quiz/cord.png",
+      },
+      {
+        id: "earring",
+        answer: "Brinco",
+        correct: false,
+        image: "./media//quiz/earring.png",
+      },
+      {
+        id: "green-shirt",
+        answer: "Camiseta verde",
+        correct: true,
+        image: "./media//quiz/green-shirt.png",
+      },
+      {
+        id: "half",
+        answer: "Meia",
+        correct: true,
+        image: "./media//quiz/half.png",
+      },
+      {
+        id: "finger",
+        answer: "Dedo",
+        correct: true,
+        image: "./media//quiz/finger.png",
+      },
+      {
+        id: "glasses",
+        answer: "Óculos",
+        correct: true,
+        image: "./media//quiz/glasses.png",
+      },
+      {
+        id: "headset",
+        answer: "Fone de ouvido",
+        correct: true,
+        image: "./media//quiz/headset.png",
+      },
+      {
+        id: "ring",
+        answer: "Anel",
+        correct: true,
+        image: "./media//quiz/ring.png",
+      },
+      {
+        id: "shoe",
+        answer: "Sapato",
+        correct: true,
+        image: "./media//quiz/shoe.png",
+      },
+      {
+        id: "tie",
+        answer: "Gravata",
+        correct: true,
+        image: "./media//quiz/tie.png",
+      },
     ],
   },
   {
@@ -82,16 +172,19 @@ const quizData = [
   },
 ];
 
+let correctSelections = new Set(); // Armazena as imagens corretas selecionadas - questão do tipo image-selection
+let answered = false; // Evita que o usuário responda novamente - questão do tipo image-selection
+
 // Função para obter a resposta salva do usuário para uma questão específica
 function getSelectedAnswer(questionId) {
   const progress = getProgress();
   return progress.selectedAnswers && progress.selectedAnswers[questionId]
     ? progress.selectedAnswers[questionId]
-    : null;
+    : [];
 }
 
 // Função para salvar progresso nos cookies
-function saveProgress(questionId, selectedAnswer) {
+function saveProgress(questionId, selectedAnswers) {
   let questionData = quizData.find((q) => q.id === questionId);
   if (!questionData) return;
 
@@ -102,17 +195,59 @@ function saveProgress(questionId, selectedAnswer) {
     progress.selectedAnswers = {};
   }
 
-  if (!progress.answeredQuestions.includes(questionId)) {
-    progress.answeredQuestions.push(questionId);
+  // Identifica o tipo de questão
+  const isImageSelection = questionData.type === "image-selection";
+
+  // Para múltipla escolha: sempre adiciona a questão como respondida
+  if (!isImageSelection) {
+    if (!progress.answeredQuestions.includes(questionId)) {
+      progress.answeredQuestions.push(questionId);
+    }
+  } else {
+    // Para image-selection, a questão só é marcada como respondida se TODAS as respostas corretas forem selecionadas
+    const allCorrectAnswers = questionData.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    const isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+    if (isFullyCorrect) {
+      if (!progress.answeredQuestions.includes(questionId)) {
+        progress.answeredQuestions.push(questionId);
+      }
+    }
   }
 
-  progress.selectedAnswers[questionId] = selectedAnswer;
-  progress.lastQuestion = questionId;
-  progress.lastPanorama = questionData.panoramaId;
+  progress.selectedAnswers[questionId] = selectedAnswers; // Atualiza respostas salvas
+  progress.lastQuestion = questionId; // Última questão respondida
+  progress.lastPanorama = questionData.panoramaId; // Panorama da última questão respondida
 
   document.cookie = `quizProgress=${JSON.stringify(
     progress
   )};path=/;expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+}
+
+// Função para retornar dados da questão correta
+function getCorrectAnswers(question, selectedAnswers) {
+  let isFullyCorrect = false; // Declarado antes para ser usado no escopo global da função
+  if (question.type === "image-selection" || question.type === "ordering") {
+    // 🚀 Verifica se todas as respostas corretas foram selecionadas
+    const allCorrectAnswers = question.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    const correctSelectionsCount = selectedAnswers.filter((ans) =>
+      allCorrectAnswers.includes(ans)
+    ).length;
+
+    isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+    return { allCorrectAnswers, isFullyCorrect, correctSelectionsCount };
+  }
 }
 
 // Função para renderizar a pergunta dentro do modal
@@ -127,11 +262,37 @@ function renderQuestion(panoramaId) {
     return;
   }
 
+  let isFullyCorrect = false; // Declarado antes para ser usado no escopo global da função
+  let correctSelectionsCount = 0; // Declarado antes para ser usado no escopo global da função
+  let allCorrectAnswers = []; 
+
   const progress = getProgress();
   const alreadyAnswered = progress.answeredQuestions.includes(question.id);
-  const selectedAnswer = getSelectedAnswer(question.id); // Pega a resposta salva
+  const selectedAnswers = getSelectedAnswer(question.id); // Pega a resposta salva
 
-  let questionHTML = `
+  if (question.type === "image-selection" || question.type === "ordering") {
+    // 🚀 Verifica se todas as respostas corretas foram selecionadas
+    allCorrectAnswers = question.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    correctSelectionsCount = selectedAnswers.filter((ans) =>
+      allCorrectAnswers.includes(ans)
+    ).length;
+
+    isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+  }
+
+  let gapValue =
+    question.type === "image-selection" || question.type === "ordering"
+      ? "quiz-options-without-gap"
+      : "quiz-options-gap";
+
+  let questionHTML = ``;
+
+  questionHTML = `
    <div class="quiz-modal-content-top">
       <div class="close-btn-modal-container">
         <button class="button-none">
@@ -140,61 +301,99 @@ function renderQuestion(panoramaId) {
       </div>
     <h2 class="quiz-title">${question.question}</h2>
     </div>
-    <div class="quiz-options">
+                ${
+      question.type === "image-selection"
+        ? `<div class="quiz-progress"> <p id="progress-counter">Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}</p></div>`
+        : ""
+    }
+    <div class="quiz-options ${gapValue}">
   `;
 
   question.options.forEach((option) => {
     let extraClass = alreadyAnswered ? "disabled" : "";
-    let iconContent = option.letter;
+    let iconContent = "";
     let iconColor = "";
     let backgroundColor = "";
 
-    // Antes do fechamento do modal (apenas cor de fundo)
-    if (!alreadyAnswered && selectedAnswer === option.letter) {
-      extraClass += " selected"; // Apenas a cor de fundo
-    }
-
-    // Após reabrir o modal (aplica a estilização completa)
-    if (alreadyAnswered && selectedAnswer === option.letter) {
-      extraClass += " selected-option";
-    }
-
-    if (alreadyAnswered) {
-      if (option.correct) {
-        extraClass += " correct";
-        iconContent = "✔"; // ✔
-        iconColor = "correct-icon";
-        backgroundColor = "option-already-answered";
-      } else {
-        extraClass += " incorrect";
-        iconContent = "✖"; // ✖
-        iconColor = "incorrect-icon";
-        backgroundColor = "option-already-answered";
+    // Caso seja seleção/ordenação de imagem, exibe a imagem
+    if (question.type === "image-selection" || question.type === "ordering") {
+      // Mantém respostas corretas já marcadas e permite novas interações até que todas sejam corretas
+      if (selectedAnswers.includes(option.id)) {
+        extraClass += option.correct ? " selected-correct" : "";
+        iconContent = option.correct ? "✅" : "";
       }
-    }
 
-    questionHTML += `
-      <button class="quiz-option ${extraClass}" 
-              data-question-id="${question.id}" 
-              data-answer="${option.letter}" 
-              ${alreadyAnswered ? "disabled" : ""}>
-        <span class="option-letter ${iconColor} ${backgroundColor}">${iconContent}</span>
+      questionHTML += `
+      <div class="image-container quiz-option ${extraClass}" 
+                 data-question-id="${question.id}" 
+              data-answer="${option.id}" 
+              ${isFullyCorrect ? "disabled" : ""}>
+        <img src="${option.image}" alt="${
+        option.answer
+      }" class="selectable-image">
         <span class="option-text">${option.answer}</span>
-      </button>
-    `;
+        <span class="icon-feedback">${iconContent}</span>
+      </div>
+      `;
+    } else {
+      iconContent = option.letter;
+      // Antes do fechamento do modal (apenas cor de fundo)
+      if (!alreadyAnswered && selectedAnswers === option.letter) {
+        extraClass += " selected"; // Apenas a cor de fundo
+      }
+
+      // Após reabrir o modal (aplica a estilização completa)
+      if (alreadyAnswered && selectedAnswers === option.letter) {
+        extraClass += " selected-option";
+      }
+
+      if (alreadyAnswered) {
+        if (option.correct) {
+          extraClass += " correct";
+          iconContent = "✔"; // ✔
+          iconColor = "correct-icon";
+          backgroundColor = "option-already-answered";
+        } else {
+          extraClass += " incorrect";
+          iconContent = "✖"; // ✖
+          iconColor = "incorrect-icon";
+          backgroundColor = "option-already-answered";
+        }
+      }
+
+      questionHTML += `
+        <button class="quiz-option ${extraClass}" 
+                data-question-id="${question.id}" 
+                data-answer="${option.letter}" 
+                ${alreadyAnswered ? "disabled" : ""}>
+          <span class="option-letter ${iconColor} ${backgroundColor}">${iconContent}</span>
+          <span class="option-text">${option.answer}</span>
+        </button>
+      `;
+    }
   });
 
   // Adiciona o botão "OK" apenas se alreadyAnswered for falso
-  if (!alreadyAnswered) {
+  if (!alreadyAnswered && question.type !== "image-selection") {
     questionHTML += `<button id="confirmAnswer" class="confirm-btn" ${
       alreadyAnswered ? "disabled" : ""
     }>OK</button>`;
   }
 
+  questionHTML += `</div>`;
   modalContent.innerHTML = questionHTML;
 
+  // Adiciona eventos de clique apenas se o usuário ainda não acertou tudo
+  if (question.type === "image-selection" && !isFullyCorrect) {
+    document.querySelectorAll(".image-container").forEach((container) => {
+      container.addEventListener("click", function () {
+        handleImageClick(this, question);
+      });
+    });
+  }
+
   // Evento para destacar a opção selecionada antes da confirmação
-  if (!alreadyAnswered) {
+  if (!alreadyAnswered && question.type !== "image-selection") {
     document.querySelectorAll(".quiz-option").forEach((button) => {
       button.addEventListener("click", function () {
         document
@@ -316,3 +515,132 @@ window.onload = function () {
     console.log("Nenhuma questão respondida, iniciando do primeiro panorama.");
   }
 };
+
+// # Funções para questões do tipo: image-selection # //
+
+// Exibe o modal de conclusão dinamicamente com confetes em tela cheia
+function showCompletionModal() {
+  // Se o modal já existir, remove para recriar atualizado
+  const existingModal = document.getElementById("completionModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Criar o modal dinamicamente
+  const modal = document.createElement("div");
+  modal.id = "completionModal";
+  modal.className = "completion-modal";
+  modal.innerHTML = `
+    <h2>Parabéns! Você retirou todos os itens! 🎉</h2>
+    <button onclick="closeBothModals()">Prosseguir</button>
+  `;
+
+  // Criar e adicionar container de confetes na página inteira
+  let confettiContainer = document.createElement("div");
+  confettiContainer.id = "confetti-container";
+
+  document.body.appendChild(confettiContainer);
+  document.body.appendChild(modal);
+
+  // Exibir o modal
+  modal.style.display = "flex";
+  modal.style.flexDirection = "column";
+
+  // Chamar a função para gerar confetes
+  generateConfetti();
+
+  // Remover os confetes após 5 segundos
+  setTimeout(() => {
+    confettiContainer.remove();
+  }, 5000);
+}
+
+// Gera cores aleatórias para os confetes
+function getRandomColor() {
+  const colors = ["#ff0", "#f00", "#0f0", "#00f", "#f0f", "#0ff", "#ff6600"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Função para criar confetes animados
+function generateConfetti() {
+  const confettiContainer = document.getElementById("confetti-container");
+
+  for (let i = 0; i < 400; i++) {
+    // Número de confetes aumentados para cobrir toda a tela
+    let confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = `${Math.random() * 100}%`; // Posição aleatória horizontal
+    confetti.style.animationDelay = `${Math.random() * 1}s`; // Atraso aleatório
+    confetti.style.backgroundColor = getRandomColor(); // Cor aleatória
+    confetti.style.width = `${Math.random() * 10 + 5}px`; // Tamanhos variados
+    confetti.style.height = `${Math.random() * 20 + 5}px`; // Altura variada
+
+    confettiContainer.appendChild(confetti);
+  }
+}
+
+// Fecha o modal de conclusão e o modal do quiz
+function closeBothModals() {
+  const completionModal = document.getElementById("completionModal");
+  if (completionModal) {
+    completionModal.remove();
+  }
+  document.getElementById("quizModalContainer").style.display = "none";
+}
+
+// Abre modal da questão do tipo image-selection
+function openImageSelectionModal() {
+  document.getElementById("imageSelectionModal").style.display = "flex";
+  renderQuestion();
+}
+
+// Fecha modal da questão do tipo image-selection
+function closeImageSelectionModal() {
+  document.getElementById("imageSelectionModal").style.display = "none";
+}
+
+// Função para controlar o clique nas imagens da questão do tipo image-selection
+function handleImageClick(container, question) {
+  const imageId = container.getAttribute("data-answer");
+  const option = question.options.find((opt) => opt.id === imageId);
+  const iconSpan = container.querySelector(".icon-feedback");
+
+  let selectedAnswers = getSelectedAnswer(question.id);
+
+  if (option.correct) {
+    if (!selectedAnswers.includes(imageId)) {
+      selectedAnswers.push(imageId);
+    }
+    container.classList.add("selected-correct");
+    iconSpan.textContent = "✅";
+  } else {
+    iconSpan.textContent = "❌";
+    setTimeout(() => {
+      iconSpan.textContent = "";
+    }, 500);
+  }
+
+  saveProgress(question.id, selectedAnswers); // Salva progresso
+
+  // Se o usuário acertar todas as imagens, exibe modal de conclusão
+  const allCorrectAnswers = question.options
+    .filter((opt) => opt.correct)
+    .map((opt) => opt.id);
+
+  // Atualiza a contagem de acertos no DOM
+  const correctSelectionsCount = selectedAnswers.filter((ans) =>
+    allCorrectAnswers.includes(ans)
+  ).length;
+  const progressCounter = document.getElementById("progress-counter");
+  if (progressCounter) {
+    progressCounter.textContent = `Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}`;
+  }
+
+  // Verifica se todas as imagens corretas foram selecionadas
+  if (
+    selectedAnswers.length === allCorrectAnswers.length &&
+    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans))
+  ) {
+    showCompletionModal();
+  }
+}
