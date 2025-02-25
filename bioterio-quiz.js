@@ -594,3 +594,8 @@ function openImageSelectionModal() {
   renderQuestion();
 }
 
+// Fecha modal da questão do tipo image-selection
+function closeImageSelectionModal() {
+  document.getElementById("imageSelectionModal").style.display = "none";
+}
+
