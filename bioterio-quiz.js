@@ -515,3 +515,42 @@ window.onload = function () {
     console.log("Nenhuma questão respondida, iniciando do primeiro panorama.");
   }
 };
+
+// # Funções para questões do tipo: image-selection # //
+
+// Exibe o modal de conclusão dinamicamente com confetes em tela cheia
+function showCompletionModal() {
+  // Se o modal já existir, remove para recriar atualizado
+  const existingModal = document.getElementById("completionModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Criar o modal dinamicamente
+  const modal = document.createElement("div");
+  modal.id = "completionModal";
+  modal.className = "completion-modal";
+  modal.innerHTML = `
+    <h2>Parabéns! Você retirou todos os itens! 🎉</h2>
+    <button onclick="closeBothModals()">Prosseguir</button>
+  `;
+
+  // Criar e adicionar container de confetes na página inteira
+  let confettiContainer = document.createElement("div");
+  confettiContainer.id = "confetti-container";
+
+  document.body.appendChild(confettiContainer);
+  document.body.appendChild(modal);
+
+  // Exibir o modal
+  modal.style.display = "flex";
+  modal.style.flexDirection = "column";
+
+  // Chamar a função para gerar confetes
+  generateConfetti();
+
+  // Remover os confetes após 5 segundos
+  setTimeout(() => {
+    confettiContainer.remove();
+  }, 5000);
+}
