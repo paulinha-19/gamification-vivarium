@@ -578,3 +578,12 @@ function generateConfetti() {
     confettiContainer.appendChild(confetti);
   }
 }
+
+// Fecha o modal de conclusão e o modal do quiz
+function closeBothModals() {
+  const completionModal = document.getElementById("completionModal");
+  if (completionModal) {
+    completionModal.remove();
+  }
+  document.getElementById("quizModalContainer").style.display = "none";
+}
