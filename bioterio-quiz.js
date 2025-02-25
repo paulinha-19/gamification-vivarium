@@ -268,9 +268,23 @@ function renderQuestion(panoramaId) {
 
   const progress = getProgress();
   const alreadyAnswered = progress.answeredQuestions.includes(question.id);
-  const selectedAnswer = getSelectedAnswer(question.id); // Pega a resposta salva
+  const selectedAnswers = getSelectedAnswer(question.id); // Pega a resposta salva
 
-  let questionHTML = `
+  if (question.type === "image-selection" || question.type === "ordering") {
+    // 🚀 Verifica se todas as respostas corretas foram selecionadas
+    allCorrectAnswers = question.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    correctSelectionsCount = selectedAnswers.filter((ans) =>
+      allCorrectAnswers.includes(ans)
+    ).length;
+
+    isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+  }
+
    <div class="quiz-modal-content-top">
       <div class="close-btn-modal-container">
         <button class="button-none">
