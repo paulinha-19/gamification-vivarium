@@ -380,7 +380,17 @@ function renderQuestion(panoramaId) {
     }>OK</button>`;
   }
 
+  questionHTML += `</div>`;
   modalContent.innerHTML = questionHTML;
+
+  // Adiciona eventos de clique apenas se o usuário ainda não acertou tudo
+  if (question.type === "image-selection" && !isFullyCorrect) {
+    document.querySelectorAll(".image-container").forEach((container) => {
+      container.addEventListener("click", function () {
+        handleImageClick(this, question);
+      });
+    });
+  }
 
   // Evento para destacar a opção selecionada antes da confirmação
   if (!alreadyAnswered) {
