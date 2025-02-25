@@ -599,3 +599,48 @@ function closeImageSelectionModal() {
   document.getElementById("imageSelectionModal").style.display = "none";
 }
 
+// Função para controlar o clique nas imagens da questão do tipo image-selection
+function handleImageClick(container, question) {
+  const imageId = container.getAttribute("data-answer");
+  const option = question.options.find((opt) => opt.id === imageId);
+  const iconSpan = container.querySelector(".icon-feedback");
+
+  let selectedAnswers = getSelectedAnswer(question.id);
+
+  if (option.correct) {
+    if (!selectedAnswers.includes(imageId)) {
+      selectedAnswers.push(imageId);
+    }
+    container.classList.add("selected-correct");
+    iconSpan.textContent = "✅";
+  } else {
+    iconSpan.textContent = "❌";
+    setTimeout(() => {
+      iconSpan.textContent = "";
+    }, 500);
+  }
+
+  saveProgress(question.id, selectedAnswers); // Salva progresso
+
+  // Se o usuário acertar todas as imagens, exibe modal de conclusão
+  const allCorrectAnswers = question.options
+    .filter((opt) => opt.correct)
+    .map((opt) => opt.id);
+
+  // Atualiza a contagem de acertos no DOM
+  const correctSelectionsCount = selectedAnswers.filter((ans) =>
+    allCorrectAnswers.includes(ans)
+  ).length;
+  const progressCounter = document.getElementById("progress-counter");
+  if (progressCounter) {
+    progressCounter.textContent = `Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}`;
+  }
+
+  // Verifica se todas as imagens corretas foram selecionadas
+  if (
+    selectedAnswers.length === allCorrectAnswers.length &&
+    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans))
+  ) {
+    showCompletionModal();
+  }
+}
