@@ -229,6 +229,27 @@ function saveProgress(questionId, selectedAnswers) {
   )};path=/;expires=Fri, 31 Dec 9999 23:59:59 GMT`;
 }
 
+// Função para retornar dados da questão correta
+function getCorrectAnswers(question, selectedAnswers) {
+  let isFullyCorrect = false; // Declarado antes para ser usado no escopo global da função
+  if (question.type === "image-selection" || question.type === "ordering") {
+    // 🚀 Verifica se todas as respostas corretas foram selecionadas
+    const allCorrectAnswers = question.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    const correctSelectionsCount = selectedAnswers.filter((ans) =>
+      allCorrectAnswers.includes(ans)
+    ).length;
+
+    isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+    return { allCorrectAnswers, isFullyCorrect, correctSelectionsCount };
+  }
+}
+
 // Função para renderizar a pergunta dentro do modal
 function renderQuestion(panoramaId) {
   const modalContent = document.getElementById("quizModalContent");
