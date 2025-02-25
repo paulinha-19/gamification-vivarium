@@ -393,7 +393,7 @@ function renderQuestion(panoramaId) {
   }
 
   // Evento para destacar a opção selecionada antes da confirmação
-  if (!alreadyAnswered) {
+  if (!alreadyAnswered && question.type !== "image-selection") {
     document.querySelectorAll(".quiz-option").forEach((button) => {
       button.addEventListener("click", function () {
         document
