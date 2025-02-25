@@ -554,3 +554,9 @@ function showCompletionModal() {
     confettiContainer.remove();
   }, 5000);
 }
+
+// Gera cores aleatórias para os confetes
+function getRandomColor() {
+  const colors = ["#ff0", "#f00", "#0f0", "#00f", "#f0f", "#0ff", "#ff6600"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
