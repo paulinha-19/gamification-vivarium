@@ -172,6 +172,9 @@ const quizData = [
   },
 ];
 
+let correctSelections = new Set(); // Armazena as imagens corretas selecionadas - questão do tipo image-selection
+let answered = false; // Evita que o usuário responda novamente - questão do tipo image-selection
+
 // Função para obter a resposta salva do usuário para uma questão específica
 function getSelectedAnswer(questionId) {
   const progress = getProgress();
