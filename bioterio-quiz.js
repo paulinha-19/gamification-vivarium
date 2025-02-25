@@ -374,7 +374,7 @@ function renderQuestion(panoramaId) {
   });
 
   // Adiciona o botão "OK" apenas se alreadyAnswered for falso
-  if (!alreadyAnswered) {
+  if (!alreadyAnswered && question.type !== "image-selection") {
     questionHTML += `<button id="confirmAnswer" class="confirm-btn" ${
       alreadyAnswered ? "disabled" : ""
     }>OK</button>`;
