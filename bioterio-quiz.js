@@ -180,7 +180,7 @@ function getSelectedAnswer(questionId) {
   const progress = getProgress();
   return progress.selectedAnswers && progress.selectedAnswers[questionId]
     ? progress.selectedAnswers[questionId]
-    : null;
+    : [];
 }
 
 // Função para salvar progresso nos cookies
