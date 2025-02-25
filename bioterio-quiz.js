@@ -184,7 +184,7 @@ function getSelectedAnswer(questionId) {
 }
 
 // Função para salvar progresso nos cookies
-function saveProgress(questionId, selectedAnswer) {
+function saveProgress(questionId, selectedAnswers) {
   let questionData = quizData.find((q) => q.id === questionId);
   if (!questionData) return;
 
@@ -195,13 +195,34 @@ function saveProgress(questionId, selectedAnswer) {
     progress.selectedAnswers = {};
   }
 
-  if (!progress.answeredQuestions.includes(questionId)) {
-    progress.answeredQuestions.push(questionId);
+  // Identifica o tipo de questão
+  const isImageSelection = questionData.type === "image-selection";
+
+  // Para múltipla escolha: sempre adiciona a questão como respondida
+  if (!isImageSelection) {
+    if (!progress.answeredQuestions.includes(questionId)) {
+      progress.answeredQuestions.push(questionId);
+    }
+  } else {
+    // Para image-selection, a questão só é marcada como respondida se TODAS as respostas corretas forem selecionadas
+    const allCorrectAnswers = questionData.options
+      .filter((opt) => opt.correct)
+      .map((opt) => opt.id);
+
+    const isFullyCorrect =
+      selectedAnswers.length === allCorrectAnswers.length &&
+      selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+    if (isFullyCorrect) {
+      if (!progress.answeredQuestions.includes(questionId)) {
+        progress.answeredQuestions.push(questionId);
+      }
+    }
   }
 
-  progress.selectedAnswers[questionId] = selectedAnswer;
-  progress.lastQuestion = questionId;
-  progress.lastPanorama = questionData.panoramaId;
+  progress.selectedAnswers[questionId] = selectedAnswers; // Atualiza respostas salvas
+  progress.lastQuestion = questionId; // Última questão respondida
+  progress.lastPanorama = questionData.panoramaId; // Panorama da última questão respondida
 
   document.cookie = `quizProgress=${JSON.stringify(
     progress
