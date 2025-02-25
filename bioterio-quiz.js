@@ -311,43 +311,66 @@ function renderQuestion(panoramaId) {
 
   question.options.forEach((option) => {
     let extraClass = alreadyAnswered ? "disabled" : "";
-    let iconContent = option.letter;
+    let iconContent = "";
     let iconColor = "";
     let backgroundColor = "";
 
-    // Antes do fechamento do modal (apenas cor de fundo)
-    if (!alreadyAnswered && selectedAnswer === option.letter) {
-      extraClass += " selected"; // Apenas a cor de fundo
-    }
-
-    // Após reabrir o modal (aplica a estilização completa)
-    if (alreadyAnswered && selectedAnswer === option.letter) {
-      extraClass += " selected-option";
-    }
-
-    if (alreadyAnswered) {
-      if (option.correct) {
-        extraClass += " correct";
-        iconContent = "✔"; // ✔
-        iconColor = "correct-icon";
-        backgroundColor = "option-already-answered";
-      } else {
-        extraClass += " incorrect";
-        iconContent = "✖"; // ✖
-        iconColor = "incorrect-icon";
-        backgroundColor = "option-already-answered";
+    // Caso seja seleção/ordenação de imagem, exibe a imagem
+    if (question.type === "image-selection" || question.type === "ordering") {
+      // Mantém respostas corretas já marcadas e permite novas interações até que todas sejam corretas
+      if (selectedAnswers.includes(option.id)) {
+        extraClass += option.correct ? " selected-correct" : "";
+        iconContent = option.correct ? "✅" : "";
       }
-    }
 
-    questionHTML += `
-      <button class="quiz-option ${extraClass}" 
-              data-question-id="${question.id}" 
-              data-answer="${option.letter}" 
-              ${alreadyAnswered ? "disabled" : ""}>
-        <span class="option-letter ${iconColor} ${backgroundColor}">${iconContent}</span>
+      questionHTML += `
+      <div class="image-container quiz-option ${extraClass}" 
+                 data-question-id="${question.id}" 
+              data-answer="${option.id}" 
+              ${isFullyCorrect ? "disabled" : ""}>
+        <img src="${option.image}" alt="${
+        option.answer
+      }" class="selectable-image">
         <span class="option-text">${option.answer}</span>
-      </button>
-    `;
+        <span class="icon-feedback">${iconContent}</span>
+      </div>
+      `;
+    } else {
+      iconContent = option.letter;
+      // Antes do fechamento do modal (apenas cor de fundo)
+      if (!alreadyAnswered && selectedAnswers === option.letter) {
+        extraClass += " selected"; // Apenas a cor de fundo
+      }
+
+      // Após reabrir o modal (aplica a estilização completa)
+      if (alreadyAnswered && selectedAnswers === option.letter) {
+        extraClass += " selected-option";
+      }
+
+      if (alreadyAnswered) {
+        if (option.correct) {
+          extraClass += " correct";
+          iconContent = "✔"; // ✔
+          iconColor = "correct-icon";
+          backgroundColor = "option-already-answered";
+        } else {
+          extraClass += " incorrect";
+          iconContent = "✖"; // ✖
+          iconColor = "incorrect-icon";
+          backgroundColor = "option-already-answered";
+        }
+      }
+
+      questionHTML += `
+        <button class="quiz-option ${extraClass}" 
+                data-question-id="${question.id}" 
+                data-answer="${option.letter}" 
+                ${alreadyAnswered ? "disabled" : ""}>
+          <span class="option-letter ${iconColor} ${backgroundColor}">${iconContent}</span>
+          <span class="option-text">${option.answer}</span>
+        </button>
+      `;
+    }
   });
 
   // Adiciona o botão "OK" apenas se alreadyAnswered for falso
