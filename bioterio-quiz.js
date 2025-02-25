@@ -587,3 +587,10 @@ function closeBothModals() {
   }
   document.getElementById("quizModalContainer").style.display = "none";
 }
+
+// Abre modal da questão do tipo image-selection
+function openImageSelectionModal() {
+  document.getElementById("imageSelectionModal").style.display = "flex";
+  renderQuestion();
+}
+
