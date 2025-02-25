@@ -285,6 +285,12 @@ function renderQuestion(panoramaId) {
       selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
   }
 
+  let gapValue =
+    question.type === "image-selection" || question.type === "ordering"
+      ? "quiz-options-without-gap"
+      : "quiz-options-gap";
+
+  let questionHTML = ``;
    <div class="quiz-modal-content-top">
       <div class="close-btn-modal-container">
         <button class="button-none">
