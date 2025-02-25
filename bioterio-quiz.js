@@ -560,3 +560,21 @@ function getRandomColor() {
   const colors = ["#ff0", "#f00", "#0f0", "#00f", "#f0f", "#0ff", "#ff6600"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
+// Função para criar confetes animados
+function generateConfetti() {
+  const confettiContainer = document.getElementById("confetti-container");
+
+  for (let i = 0; i < 400; i++) {
+    // Número de confetes aumentados para cobrir toda a tela
+    let confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = `${Math.random() * 100}%`; // Posição aleatória horizontal
+    confetti.style.animationDelay = `${Math.random() * 1}s`; // Atraso aleatório
+    confetti.style.backgroundColor = getRandomColor(); // Cor aleatória
+    confetti.style.width = `${Math.random() * 10 + 5}px`; // Tamanhos variados
+    confetti.style.height = `${Math.random() * 20 + 5}px`; // Altura variada
+
+    confettiContainer.appendChild(confetti);
+  }
+}
