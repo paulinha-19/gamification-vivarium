@@ -635,7 +635,15 @@ window.onload = function () {
 // # Funções para questões do tipo: image-selection # //
 
 // Exibe o modal de conclusão dinamicamente com confetes em tela cheia
-function showCompletionModal() {
+function showCompletionModal(questionId, isCorrect) {
+  const question = quizData.find((q) => q.id === questionId);
+  if (!question) return;
+
+  // Define o feedback com base na resposta correta/incorreta
+  const message = isCorrect
+    ? question.feedback.correct
+    : question.feedback.incorrect;
+
   // Se o modal já existir, remove para recriar atualizado
   const existingModal = document.getElementById("completionModal");
   if (existingModal) {
@@ -646,29 +654,33 @@ function showCompletionModal() {
   const modal = document.createElement("div");
   modal.id = "completionModal";
   modal.className = "completion-modal";
+  // Define a altura correta com base na resposta
+  modal.style.height = isCorrect ? "18%" : "15%";
+  modal.style.height =
+    isCorrect && question.type === "image-selection" ? "16%" : "15%";
   modal.innerHTML = `
-    <h2>Parabéns! Você retirou todos os itens! 🎉</h2>
-    <button onclick="closeBothModals()">Prosseguir</button>
-  `;
+  <h2 class="feedback-message">${message}</h2>
+  <button onclick="closeBothModals()">Prosseguir</button>
+`;
 
-  // Criar e adicionar container de confetes na página inteira
-  let confettiContainer = document.createElement("div");
-  confettiContainer.id = "confetti-container";
+  // Se for uma resposta correta, exibe confetes
+  // Criar e adicionar container de confetes na página inteira (somente se for resposta correta)
+  if (isCorrect) {
+    // Criar e adicionar container de confetes na página inteira
+    let confettiContainer = document.createElement("div");
+    confettiContainer.id = "confetti-container";
+    document.body.appendChild(confettiContainer);
+    generateConfetti();
+    // Remover os confetes após 5 segundos
+    setTimeout(() => {
+      confettiContainer.remove();
+    }, 5000);
+  }
 
-  document.body.appendChild(confettiContainer);
   document.body.appendChild(modal);
-
   // Exibir o modal
   modal.style.display = "flex";
   modal.style.flexDirection = "column";
-
-  // Chamar a função para gerar confetes
-  generateConfetti();
-
-  // Remover os confetes após 5 segundos
-  setTimeout(() => {
-    confettiContainer.remove();
-  }, 5000);
 }
 
 // Gera cores aleatórias para os confetes
