@@ -142,18 +142,20 @@
 
 .correct {
     background-color: green !important;
+    color: white !important;
 }
 
 .incorrect {
     background-color: red !important;
+    color: white !important;
 }
 
 .correct-icon {
-    color: green !important;
+    color: rgb(255, 255, 255) !important;
 }
 
 .incorrect-icon {
-    color: red !important;
+    color: rgb(255, 255, 255) !important;
 }
 
 .correct-background,
@@ -246,10 +248,12 @@
 .completion-modal {
     display: none;
     position: fixed;
+    width: 20%;
+    height: 15%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: rgb(25, 32, 51);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
@@ -323,4 +327,9 @@
         transform: translateY(100vh) rotate(360deg);
         opacity: 0;
     }
+}
+
+/* Feeback após responder a questão */
+.feedback-message {
+    color: white;
 }
