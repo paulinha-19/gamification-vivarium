@@ -763,11 +763,12 @@ function handleImageClick(container, question) {
     progressCounter.textContent = `Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}`;
   }
 
-  // Verifica se todas as imagens corretas foram selecionadas
-  if (
+  const isFullyCorrect =
     selectedAnswers.length === allCorrectAnswers.length &&
-    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans))
-  ) {
-    showCompletionModal();
+    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+  // Verifica se todas as imagens corretas foram selecionadas
+  if (isFullyCorrect) {
+    showCompletionModal(question.id, true);
   }
 }
