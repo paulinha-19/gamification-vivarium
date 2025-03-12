@@ -713,7 +713,6 @@ function closeBothModals() {
   if (completionModal) {
     completionModal.remove();
   }
-  document.getElementById("quizModalContainer").style.display = "none";
 }
 
 // Abre modal da questão do tipo image-selection
