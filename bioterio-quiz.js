@@ -24,6 +24,11 @@ const quizData = [
         correct: false,
       },
     ],
+    feedback: {
+      correct:
+        "Você acertou! Coloque sua digital na fechadura para acessar a primeira área.",
+      incorrect: "Que pena! Resposta errada.",
+    },
   },
   {
     id: "question2",
@@ -50,6 +55,10 @@ const quizData = [
       },
       { letter: "D", answer: "Tô bem e com disposição. ", correct: true },
     ],
+    feedback: {
+      correct: "Que ótimo! Toque na fechadura e acesse a área de paramentação.",
+      incorrect: "Que pena! Resposta errada.",
+    },
   },
   {
     id: "question3",
@@ -156,19 +165,121 @@ const quizData = [
         image: "./media//quiz/tie.png",
       },
     ],
+    feedback: {
+      correct: "Parabéns! Você retirou todos os itens! 🎉",
+      incorrect: "Que pena! Você não selecionou todos os itens corretamente.",
+    },
   },
   {
     id: "question4",
     panoramaId: "img4",
     mediaIndex: 4,
     type: "ordering",
-    question: "Organize os passos para descarte correto de resíduos químicos:",
+    question:
+      "Agora organize  as imagens de acordo com a sequência correta de paramentação e mostre que é sagaz!",
     options: [
-      { letter: "A", answer: "Etiquetar corretamente", order: 1 },
-      { letter: "B", answer: "Armazenar em local apropriado", order: 2 },
-      { letter: "C", answer: "Separar os tipos de resíduos", order: 3 },
-      { letter: "D", answer: "Descartar conforme regulamentação", order: 4 },
+      {
+        id: "order1",
+        answer: "order1",
+        order: 1,
+        image: "./media//quiz/order-1.png",
+      },
+      {
+        id: "order2",
+        answer: "order2",
+        order: 2,
+        image: "./media//quiz/order-2.png",
+      },
+      {
+        id: "order3",
+        answer: "order3",
+        order: 3,
+        image: "./media//quiz/order-3.png",
+      },
+      {
+        id: "order4",
+        answer: "order4",
+        order: 4,
+        image: "./media//quiz/order-4.png",
+      },
+      {
+        id: "order5",
+        answer: "order5",
+        order: 5,
+        image: "./media//quiz/order-5.png",
+      },
+      {
+        id: "order6",
+        answer: "order6",
+        order: 6,
+        image: "./media//quiz/order-6.png",
+      },
+      {
+        id: "order7",
+        answer: "order7",
+        order: 7,
+        image: "./media//quiz/order-7.png",
+      },
+      {
+        id: "order8",
+        answer: "order8",
+        order: 8,
+        image: "./media//quiz/order-8.png",
+      },
+      {
+        id: "order9",
+        answer: "order9",
+        order: 9,
+        image: "./media//quiz/order-9.png",
+      },
+      {
+        id: "order10",
+        answer: "order10",
+        order: 10,
+        image: "./media//quiz/order-10.png",
+      },
+      {
+        id: "order11",
+        answer: "order11",
+        order: 11,
+        image: "./media//quiz/order-11.png",
+      },
+      {
+        id: "order12",
+        answer: "order12",
+        order: 12,
+        image: "./media//quiz/order-12.png",
+      },
+      {
+        id: "order13",
+        answer: "order13",
+        order: 13,
+        image: "./media//quiz/order-13.png",
+      },
+      {
+        id: "order14",
+        answer: "order14",
+        order: 14,
+        image: "./media//quiz/order-14.png",
+      },
+      {
+        id: "order15",
+        answer: "order15",
+        order: 15,
+        image: "./media//quiz/order-15.png",
+      },
+      {
+        id: "order16",
+        answer: "order16",
+        order: 16,
+        image: "./media//quiz/order-16.png",
+      },
     ],
+    feedback: {
+      correct:
+        "Muito bem! Você organizou corretamente a sequência de paramentação!",
+      incorrect: "Que pena! Tente novamente organizar corretamente os passos.",
+    },
   },
 ];
 
@@ -337,10 +448,9 @@ function renderQuestion(panoramaId) {
       `;
     } else {
       iconContent = option.letter;
-      // Antes do fechamento do modal (apenas cor de fundo)
-      if (!alreadyAnswered && selectedAnswers === option.letter) {
-        extraClass += " selected"; // Apenas a cor de fundo
-      }
+
+      // Verifica se essa opção foi selecionada pelo usuário
+      const wasSelected = selectedAnswers === option.letter;
 
       // Após reabrir o modal (aplica a estilização completa)
       if (alreadyAnswered && selectedAnswers === option.letter) {
@@ -348,16 +458,16 @@ function renderQuestion(panoramaId) {
       }
 
       if (alreadyAnswered) {
-        if (option.correct) {
-          extraClass += " correct";
-          iconContent = "✔"; // ✔
-          iconColor = "correct-icon";
-          backgroundColor = "option-already-answered";
-        } else {
-          extraClass += " incorrect";
-          iconContent = "✖"; // ✖
-          iconColor = "incorrect-icon";
-          backgroundColor = "option-already-answered";
+        if (wasSelected) {
+          if (option.correct) {
+            extraClass += " correct"; // Se foi selecionada e está correta, verde
+            iconContent = "✔";
+            iconColor = "correct-icon";
+          } else {
+            extraClass += " incorrect"; // Se foi selecionada e está errada, vermelho
+            iconContent = "✖";
+            iconColor = "incorrect-icon";
+          }
         }
       }
 
@@ -405,6 +515,7 @@ function renderQuestion(panoramaId) {
       });
     });
 
+    // Function to handle the option selected
     document
       .getElementById("confirmAnswer")
       .addEventListener("click", function () {
@@ -412,12 +523,20 @@ function renderQuestion(panoramaId) {
         if (selected) {
           const questionId = selected.getAttribute("data-question-id");
           const selectedAnswer = selected.getAttribute("data-answer");
+          const question = quizData.find((q) => q.id === questionId);
 
+          if (!question) return;
+
+          let isCorrect = question.options.find(
+            (opt) => opt.letter === selectedAnswer
+          ).correct;
+
+          // Exibe feedback no modal independente do tipo de resposta
+          showCompletionModal(questionId, isCorrect);
+
+          // Itera sobre todas as opções da questão
           document.querySelectorAll(".quiz-option").forEach((btn) => {
             const answerLetter = btn.getAttribute("data-answer");
-            const isCorrect = question.options.find(
-              (opt) => opt.letter === answerLetter
-            ).correct;
 
             let iconSpan = btn.querySelector(".option-letter");
             let textSpan = btn.querySelector(".option-text");
@@ -427,16 +546,13 @@ function renderQuestion(panoramaId) {
               btn.classList.add("selected-option");
             }
 
-            if (isCorrect) {
-              btn.classList.add("correct");
-              iconSpan.textContent = "✔"; // ✅
-              iconSpan.classList.add("correct-icon");
-              iconSpan.classList.add("correct-background");
-            } else {
-              btn.classList.add("incorrect");
-              iconSpan.textContent = "✖"; // ❌
-              iconSpan.classList.add("incorrect-icon");
-              iconSpan.classList.add("incorrect-background");
+            // Apenas a opção selecionada recebe destaque assim que é respondida
+            if (btn === selected) {
+              btn.classList.add(isCorrect ? "correct" : "incorrect");
+              iconSpan.textContent = isCorrect ? "✔" : "✖";
+              iconSpan.classList.add(
+                isCorrect ? "correct-icon" : "incorrect-icon"
+              );
             }
             btn.classList.add("disabled");
             btn.disabled = true;
@@ -519,7 +635,15 @@ window.onload = function () {
 // # Funções para questões do tipo: image-selection # //
 
 // Exibe o modal de conclusão dinamicamente com confetes em tela cheia
-function showCompletionModal() {
+function showCompletionModal(questionId, isCorrect) {
+  const question = quizData.find((q) => q.id === questionId);
+  if (!question) return;
+
+  // Define o feedback com base na resposta correta/incorreta
+  const message = isCorrect
+    ? question.feedback.correct
+    : question.feedback.incorrect;
+
   // Se o modal já existir, remove para recriar atualizado
   const existingModal = document.getElementById("completionModal");
   if (existingModal) {
@@ -530,29 +654,33 @@ function showCompletionModal() {
   const modal = document.createElement("div");
   modal.id = "completionModal";
   modal.className = "completion-modal";
+  // Define a altura correta com base na resposta
+  modal.style.height = isCorrect ? "18%" : "15%";
+  modal.style.height =
+    isCorrect && question.type === "image-selection" ? "16%" : "15%";
   modal.innerHTML = `
-    <h2>Parabéns! Você retirou todos os itens! 🎉</h2>
-    <button onclick="closeBothModals()">Prosseguir</button>
-  `;
+  <h2 class="feedback-message">${message}</h2>
+  <button onclick="closeBothModals()">Prosseguir</button>
+`;
 
-  // Criar e adicionar container de confetes na página inteira
-  let confettiContainer = document.createElement("div");
-  confettiContainer.id = "confetti-container";
+  // Se for uma resposta correta, exibe confetes
+  // Criar e adicionar container de confetes na página inteira (somente se for resposta correta)
+  if (isCorrect) {
+    // Criar e adicionar container de confetes na página inteira
+    let confettiContainer = document.createElement("div");
+    confettiContainer.id = "confetti-container";
+    document.body.appendChild(confettiContainer);
+    generateConfetti();
+    // Remover os confetes após 5 segundos
+    setTimeout(() => {
+      confettiContainer.remove();
+    }, 5000);
+  }
 
-  document.body.appendChild(confettiContainer);
   document.body.appendChild(modal);
-
   // Exibir o modal
   modal.style.display = "flex";
   modal.style.flexDirection = "column";
-
-  // Chamar a função para gerar confetes
-  generateConfetti();
-
-  // Remover os confetes após 5 segundos
-  setTimeout(() => {
-    confettiContainer.remove();
-  }, 5000);
 }
 
 // Gera cores aleatórias para os confetes
@@ -585,7 +713,6 @@ function closeBothModals() {
   if (completionModal) {
     completionModal.remove();
   }
-  document.getElementById("quizModalContainer").style.display = "none";
 }
 
 // Abre modal da questão do tipo image-selection
@@ -636,11 +763,12 @@ function handleImageClick(container, question) {
     progressCounter.textContent = `Acertos: ${correctSelectionsCount}/${allCorrectAnswers.length}`;
   }
 
-  // Verifica se todas as imagens corretas foram selecionadas
-  if (
+  const isFullyCorrect =
     selectedAnswers.length === allCorrectAnswers.length &&
-    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans))
-  ) {
-    showCompletionModal();
+    selectedAnswers.every((ans) => allCorrectAnswers.includes(ans));
+
+  // Verifica se todas as imagens corretas foram selecionadas
+  if (isFullyCorrect) {
+    showCompletionModal(question.id, true);
   }
 }
