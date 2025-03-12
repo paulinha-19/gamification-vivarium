@@ -448,10 +448,9 @@ function renderQuestion(panoramaId) {
       `;
     } else {
       iconContent = option.letter;
-      // Antes do fechamento do modal (apenas cor de fundo)
-      if (!alreadyAnswered && selectedAnswers === option.letter) {
-        extraClass += " selected"; // Apenas a cor de fundo
-      }
+
+      // Verifica se essa opção foi selecionada pelo usuário
+      const wasSelected = selectedAnswers === option.letter;
 
       // Após reabrir o modal (aplica a estilização completa)
       if (alreadyAnswered && selectedAnswers === option.letter) {
@@ -459,16 +458,16 @@ function renderQuestion(panoramaId) {
       }
 
       if (alreadyAnswered) {
-        if (option.correct) {
-          extraClass += " correct";
-          iconContent = "✔"; // ✔
-          iconColor = "correct-icon";
-          backgroundColor = "option-already-answered";
-        } else {
-          extraClass += " incorrect";
-          iconContent = "✖"; // ✖
-          iconColor = "incorrect-icon";
-          backgroundColor = "option-already-answered";
+        if (wasSelected) {
+          if (option.correct) {
+            extraClass += " correct"; // Se foi selecionada e está correta, verde
+            iconContent = "✔";
+            iconColor = "correct-icon";
+          } else {
+            extraClass += " incorrect"; // Se foi selecionada e está errada, vermelho
+            iconContent = "✖";
+            iconColor = "incorrect-icon";
+          }
         }
       }
 
@@ -516,6 +515,7 @@ function renderQuestion(panoramaId) {
       });
     });
 
+    // Function to handle the option selected
     document
       .getElementById("confirmAnswer")
       .addEventListener("click", function () {
@@ -523,12 +523,20 @@ function renderQuestion(panoramaId) {
         if (selected) {
           const questionId = selected.getAttribute("data-question-id");
           const selectedAnswer = selected.getAttribute("data-answer");
+          const question = quizData.find((q) => q.id === questionId);
 
+          if (!question) return;
+
+          let isCorrect = question.options.find(
+            (opt) => opt.letter === selectedAnswer
+          ).correct;
+
+          // Exibe feedback no modal independente do tipo de resposta
+          showCompletionModal(questionId, isCorrect);
+
+          // Itera sobre todas as opções da questão
           document.querySelectorAll(".quiz-option").forEach((btn) => {
             const answerLetter = btn.getAttribute("data-answer");
-            const isCorrect = question.options.find(
-              (opt) => opt.letter === answerLetter
-            ).correct;
 
             let iconSpan = btn.querySelector(".option-letter");
             let textSpan = btn.querySelector(".option-text");
@@ -538,16 +546,13 @@ function renderQuestion(panoramaId) {
               btn.classList.add("selected-option");
             }
 
-            if (isCorrect) {
-              btn.classList.add("correct");
-              iconSpan.textContent = "✔"; // ✅
-              iconSpan.classList.add("correct-icon");
-              iconSpan.classList.add("correct-background");
-            } else {
-              btn.classList.add("incorrect");
-              iconSpan.textContent = "✖"; // ❌
-              iconSpan.classList.add("incorrect-icon");
-              iconSpan.classList.add("incorrect-background");
+            // Apenas a opção selecionada recebe destaque assim que é respondida
+            if (btn === selected) {
+              btn.classList.add(isCorrect ? "correct" : "incorrect");
+              iconSpan.textContent = isCorrect ? "✔" : "✖";
+              iconSpan.classList.add(
+                isCorrect ? "correct-icon" : "incorrect-icon"
+              );
             }
             btn.classList.add("disabled");
             btn.disabled = true;
