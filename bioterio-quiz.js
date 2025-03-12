@@ -24,6 +24,11 @@ const quizData = [
         correct: false,
       },
     ],
+    feedback: {
+      correct:
+        "Você acertou! Coloque sua digital na fechadura para acessar a primeira área.",
+      incorrect: "Que pena! Resposta errada.",
+    },
   },
   {
     id: "question2",
@@ -50,6 +55,10 @@ const quizData = [
       },
       { letter: "D", answer: "Tô bem e com disposição. ", correct: true },
     ],
+    feedback: {
+      correct: "Que ótimo! Toque na fechadura e acesse a área de paramentação.",
+      incorrect: "Que pena! Resposta errada.",
+    },
   },
   {
     id: "question3",
@@ -156,19 +165,121 @@ const quizData = [
         image: "./media//quiz/tie.png",
       },
     ],
+    feedback: {
+      correct: "Parabéns! Você retirou todos os itens! 🎉",
+      incorrect: "Que pena! Você não selecionou todos os itens corretamente.",
+    },
   },
   {
     id: "question4",
     panoramaId: "img4",
     mediaIndex: 4,
     type: "ordering",
-    question: "Organize os passos para descarte correto de resíduos químicos:",
+    question:
+      "Agora organize  as imagens de acordo com a sequência correta de paramentação e mostre que é sagaz!",
     options: [
-      { letter: "A", answer: "Etiquetar corretamente", order: 1 },
-      { letter: "B", answer: "Armazenar em local apropriado", order: 2 },
-      { letter: "C", answer: "Separar os tipos de resíduos", order: 3 },
-      { letter: "D", answer: "Descartar conforme regulamentação", order: 4 },
+      {
+        id: "order1",
+        answer: "order1",
+        order: 1,
+        image: "./media//quiz/order-1.png",
+      },
+      {
+        id: "order2",
+        answer: "order2",
+        order: 2,
+        image: "./media//quiz/order-2.png",
+      },
+      {
+        id: "order3",
+        answer: "order3",
+        order: 3,
+        image: "./media//quiz/order-3.png",
+      },
+      {
+        id: "order4",
+        answer: "order4",
+        order: 4,
+        image: "./media//quiz/order-4.png",
+      },
+      {
+        id: "order5",
+        answer: "order5",
+        order: 5,
+        image: "./media//quiz/order-5.png",
+      },
+      {
+        id: "order6",
+        answer: "order6",
+        order: 6,
+        image: "./media//quiz/order-6.png",
+      },
+      {
+        id: "order7",
+        answer: "order7",
+        order: 7,
+        image: "./media//quiz/order-7.png",
+      },
+      {
+        id: "order8",
+        answer: "order8",
+        order: 8,
+        image: "./media//quiz/order-8.png",
+      },
+      {
+        id: "order9",
+        answer: "order9",
+        order: 9,
+        image: "./media//quiz/order-9.png",
+      },
+      {
+        id: "order10",
+        answer: "order10",
+        order: 10,
+        image: "./media//quiz/order-10.png",
+      },
+      {
+        id: "order11",
+        answer: "order11",
+        order: 11,
+        image: "./media//quiz/order-11.png",
+      },
+      {
+        id: "order12",
+        answer: "order12",
+        order: 12,
+        image: "./media//quiz/order-12.png",
+      },
+      {
+        id: "order13",
+        answer: "order13",
+        order: 13,
+        image: "./media//quiz/order-13.png",
+      },
+      {
+        id: "order14",
+        answer: "order14",
+        order: 14,
+        image: "./media//quiz/order-14.png",
+      },
+      {
+        id: "order15",
+        answer: "order15",
+        order: 15,
+        image: "./media//quiz/order-15.png",
+      },
+      {
+        id: "order16",
+        answer: "order16",
+        order: 16,
+        image: "./media//quiz/order-16.png",
+      },
     ],
+    feedback: {
+      correct:
+        "Muito bem! Você organizou corretamente a sequência de paramentação!",
+      incorrect: "Que pena! Tente novamente organizar corretamente os passos.",
+    },
   },
 ];
 
